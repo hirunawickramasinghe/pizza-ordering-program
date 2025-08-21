@@ -1,5 +1,4 @@
-# Pizza Ordering Program - Version 2
-# Added validation and customer details
+# Pizza Ordering Program
 
 MENU = {
     "Cheese": 7.0,
@@ -12,7 +11,6 @@ MENU = {
 MAX_PIZZAS = 5
 DELIVERY_FEE = 3.0
 
-# Get customer details
 def get_customer_details():
     name = input("Enter your name: ").strip().title()
     while name == "":
@@ -38,7 +36,6 @@ def get_customer_details():
 
     return {"name": name, "phone": phone, "type": order_type, "address": address}
 
-# Take order
 def take_order():
     order = {flavour: 0 for flavour in MENU}
     total_pizzas = 0
@@ -74,7 +71,6 @@ def take_order():
 
     return order
 
-# Calculate total
 def calculate_total(order, order_type):
     total = 0
     for flavour, qty in order.items():
@@ -83,7 +79,6 @@ def calculate_total(order, order_type):
         total += DELIVERY_FEE
     return total
 
-# Print receipt
 def print_receipt(customer, order, total):
     print("\n----- RECEIPT -----")
     print(f"Customer: {customer['name']}")
@@ -103,7 +98,6 @@ def print_receipt(customer, order, total):
     print("-------------------")
     print("Thank you for ordering from Python Pizza!")
 
-# Main
 def main():
     customer = get_customer_details()
     order = take_order()
