@@ -1,0 +1,40 @@
+
+# Pizza Ordering Program - Version 1
+# Basic menu and receipt
+
+# Menu
+MENU = {
+    "Cheese": 7.0,
+    "Pepperoni": 8.0,
+    "Hawaiian": 10.0,
+    "Margherita": 6.0,
+    "Ham": 8.0
+}
+
+# Store orders
+order = {flavour: 0 for flavour in MENU}
+
+# Take order
+checkout = False
+while not checkout:
+    pizza = input("Which Pizza would you like? ").strip().title()
+    if pizza in MENU:
+        qty = int(input(f"How many {pizza}? "))
+        order[pizza] += qty
+    else:
+        print("Sorry, we don’t have that pizza.")
+
+    checkout = input("Anything else? (yes/no) ").strip().lower() == "no"
+
+# Print receipt
+print("\n----- RECEIPT -----")
+total = 0
+for flavour, qty in order.items():
+    if qty > 0:
+        price = MENU[flavour] * qty
+        total += price
+        print(f"{qty} x {flavour} - ${price:.2f}")
+
+print(f"\nTOTAL: ${total:.2f}")
+print("-------------------")
+print("Thank you for ordering from Python Pizza!")
