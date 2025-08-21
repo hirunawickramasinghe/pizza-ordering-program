@@ -1,0 +1,106 @@
+# Pizza Ordering Program
+
+MENU = {
+    "1": ("Cheese", 7.0),
+    "2": ("Pepperoni", 8.0),
+    "3": ("Hawaiian", 10.0),
+    "4": ("Margherita", 6.0),
+    "5": ("Ham", 8.0)
+}
+
+MAX_PIZZAS = 5
+DELIVERY_FEE = 3.0
+
+def get_customer_details():
+    name = input("Enter your name: ").strip().title()
+    while name == "":
+        print("Name cannot be blank.")
+        name = input("Enter your name: ").strip().title()
+
+    phone = input("Enter your phone number: ").strip()
+    while phone == "" or not all(c.isdigit() or c in " -+" for c in phone):
+        print("Phone number can only have numbers, spaces, dashes or + sign.")
+        phone = input("Enter your phone number: ").strip()
+
+    order_type = input("Pickup or Delivery? ").strip().lower()
+    while order_type not in ["pickup", "delivery"]:
+        print("Please type 'pickup' or 'delivery'")
+        order_type = input("Pickup or Delivery? ").strip().lower()
+
+    address = ""
+    if order_type == "delivery":
+        address = input("Enter your delivery address: ").strip()
+        while address == "":
+            print("Address cannot be blank.")
+            address = input("Enter your delivery address: ").strip()
+
+    return {"name": name, "phone": phone, "type": order_type, "address": address}
+
+def main():
+    customer = get_customer_details()
+    order = {}
+    total_pizzas = 0
+
+    while total_pizzas < MAX_PIZZAS:
+        print("\n---- MENU ----")
+        for num, (flavour, price) in MENU.items():
+            print(f"{num}. {flavour} - ${price:.2f}")
+
+        choice = input("Enter pizza number: ").strip()
+        if choice not in MENU:
+            print("Invalid choice, pick a number from the menu.")
+            continue
+
+        flavour, price = MENU[choice]
+
+        try:
+            qty = int(input(f"How many {flavour}? "))
+            if qty <= 0:
+                print("Quantity must be at least 1.")
+                continue
+            if total_pizzas + qty > MAX_PIZZAS:
+                print(f"You can only order {MAX_PIZZAS} pizzas.")
+                continue
+        except ValueError:
+            print("Enter a valid number.")
+            continue
+
+        order[flavour] = order.get(flavour, 0) + qty
+        total_pizzas += qty
+
+        more = input("Anything else? (yes/no) ").strip().lower()
+        if more == "no":
+            break
+
+    if not order:
+        print("No pizzas ordered. Exiting.")
+        return
+
+    total = 0
+    for flavour, qty in order.items():
+        for _, (f, price) in MENU.items():
+            if f == flavour:
+                total += price * qty
+                break
+
+    if customer["type"] == "delivery":
+        total += DELIVERY_FEE
+
+    print("\n----- RECEIPT -----")
+    print(f"Customer: {customer['name']}")
+    print(f"Phone: {customer['phone']}")
+    if customer["type"] == "delivery":
+        print(f"Address: {customer['address']}")
+        print(f"Delivery Fee: ${DELIVERY_FEE:.2f}")
+    else:
+        print("Pickup Order")
+
+    print("\nItems Ordered:")
+    for flavour, qty in order.items():
+        print(f"{qty} x {flavour}")
+
+    print(f"\nTOTAL: ${total:.2f}")
+    print("-------------------")
+    print("Thank you for ordering from Python Pizza!")
+
+main()
