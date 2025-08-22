@@ -1,5 +1,6 @@
 # Pizza Ordering Program
 
+# Menu of pizzas: number, (name, price)
 MENU = {
     "1": ("Cheese", 7.0),
     "2": ("Pepperoni", 8.0),
@@ -13,6 +14,7 @@ MENU = {
     "10": ("Pesto Special", 10.0)
 }
 
+# Extras menu with prices
 EXTRAS = {
     "1": ("Extra Cheese", 1.0),
     "2": ("Mushrooms", 0.5),
@@ -20,9 +22,12 @@ EXTRAS = {
     "4": ("Pepperoni", 1.5)
 }
 
-MAX_PIZZAS = 5
-DELIVERY_FEE = 3.0
+MAX_PIZZAS = 5        # limit of pizzas per order
+DELIVERY_FEE = 3.0    # delivery cost
 
+
+# This function asks customer details
+# It checks that name is not blank, phone is valid, and if delivery it asks for address
 def get_customer_details():
     name = input("Enter your name: ").strip().title()
     while name == "":
@@ -48,6 +53,9 @@ def get_customer_details():
 
     return {"name": name, "phone": phone, "type": order_type, "address": address}
 
+
+# This function lets customer pick pizzas and extras
+# It checks that order is not more than 5 pizzas
 def take_order():
     order = {}
     total_pizzas = 0
@@ -64,19 +72,22 @@ def take_order():
 
         flavour, price = MENU[choice]
 
+        # ask how many pizzas of this type
         while True:
+            qty_str = input(f"How many {flavour}? ")
             try:
-                qty = int(input(f"How many {flavour}? "))
+                qty = int(qty_str)
                 if qty <= 0:
                     print("Quantity must be at least 1.")
-                    continue
-                if total_pizzas + qty > MAX_PIZZAS:
-                    print(f"You can only order {MAX_PIZZAS} pizzas.")
-                    continue
-                break
+                elif total_pizzas + qty > MAX_PIZZAS:
+                    print(f"You can only order {MAX_PIZZAS} pizzas in total.")
+                else:
+                    break
             except ValueError:
-                print("Enter a valid number.")
+                # stops program crashing if user types letters
+                print("Enter a valid number (1,2,3).")
 
+        # ask for extras
         extras_chosen = []
         print("Optional extras:")
         for num, (extra, price_extra) in EXTRAS.items():
@@ -93,6 +104,7 @@ def take_order():
                 else:
                     print("Invalid extra number.")
 
+        # save the order with flavour, extras and qty
         order[(flavour, tuple(extras_chosen))] = order.get((flavour, tuple(extras_chosen)), 0) + qty
         total_pizzas += qty
 
@@ -106,23 +118,33 @@ def take_order():
 
     return order
 
+
+# This function works out the total price
+# It adds pizza base price, extras and delivery if needed
 def calculate_total(order, order_type):
     total = 0
     for (flavour, extras), qty in order.items():
+        # get base pizza price
         price = MENU[[k for k,v in MENU.items() if v[0]==flavour][0]][1]
+        # add extras
         for extra, price_extra in extras:
             price += price_extra
         total += price * qty
+
     if order_type == "delivery":
         total += DELIVERY_FEE
+
     return total
 
-def print_receipt(customer, order, total):
+
+# This function prints the receipt
+# Shows customer details, items, extras and total cost
+def print_receipt(customer_info, order, total):
     print("\n----- RECEIPT -----")
-    print(f"Customer: {customer['name']}")
-    print(f"Phone: {customer['phone']}")
-    if customer["type"] == "delivery":
-        print(f"Address: {customer['address']}")
+    print("Customer:", customer_info['name'])
+    print("Phone:", customer_info['phone'])
+    if customer_info["type"] == "delivery":
+        print("Address:", customer_info['address'])
         print(f"Delivery Fee: ${DELIVERY_FEE:.2f}")
     else:
         print("Pickup Order")
@@ -131,6 +153,7 @@ def print_receipt(customer, order, total):
     for (flavour, extras), qty in order.items():
         extras_names = ", ".join([extra for extra, _ in extras])
         extras_display = f" (+{extras_names})" if extras_names else ""
+        # base price + extras
         price = MENU[[k for k,v in MENU.items() if v[0]==flavour][0]][1]
         for _, price_extra in extras:
             price += price_extra
@@ -140,15 +163,21 @@ def print_receipt(customer, order, total):
     print("-------------------")
     print("Thank you for ordering from Python Pizza!")
 
+
+# Main program keeps running until user wants to stop
 def main():
     while True:
-        customer = get_customer_details()
+        customer_info = get_customer_details()
         order = take_order()
+
         if not order:
             print("No pizzas ordered. Exiting.")
             return
-        total = calculate_total(order, customer["type"])
-        print_receipt(customer, order, total)
+
+        total = calculate_total(order, customer_info["type"])
+
+        print("\nPlease review your order:")
+        print_receipt(customer_info, order, total)
 
         confirm = input("Confirm order? (yes/no) ").strip().lower()
         if confirm == "yes":
@@ -156,9 +185,11 @@ def main():
         else:
             print("Order cancelled.")
 
-        new_order = input("Would you like to take another order? (yes/no) ").strip().lower()
+        new_order = input("\nWould you like to take another order? (yes/no) ").strip().lower()
         if new_order != "yes":
             print("Closing program. Goodbye!")
             break
 
+
+# run the program
 main()
