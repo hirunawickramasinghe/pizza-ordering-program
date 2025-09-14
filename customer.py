@@ -24,3 +24,4 @@ def get_customer_details():
             address = input("Enter your delivery address: ").strip()
 
     return {"name": name, "phone": phone, "type": order_type, "address": address}
+
