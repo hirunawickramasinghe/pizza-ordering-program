@@ -1,5 +1,5 @@
-# receipt.py
 from menu import MENU, DELIVERY_FEE
+
 
 def print_receipt(customer_info, order, total):
     print("\n----- RECEIPT -----")
@@ -11,14 +11,17 @@ def print_receipt(customer_info, order, total):
     else:
         print("Pickup Order")
 
+    # SHOW PAYMENT METHOD
+    print("Payment method:", customer_info["payment"].title())
+
     print("\nItems Ordered:")
     for (flavour, extras), qty in order.items():
         extras_names = ", ".join([extra for extra, _ in extras])
         extras_display = f" (+{extras_names})" if extras_names else ""
-        price = MENU[[k for k,v in MENU.items() if v[0]==flavour][0]][1]
+        price = MENU[[k for k, v in MENU.items() if v[0] == flavour][0]][1]
         for _, price_extra in extras:
             price += price_extra
-        print(f"{qty} x {flavour}{extras_display} - ${price*qty:.2f}")
+        print(f"{qty} x {flavour}{extras_display} - ${price * qty:.2f}")
 
     print(f"\nTOTAL: ${total:.2f}")
     print("-------------------")
